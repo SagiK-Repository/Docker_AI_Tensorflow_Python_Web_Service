@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    button {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    label {
+      margin: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <button id="clear">초기화</button>
+  <button id="recognize">인식</button>
+  <label id="result">결과: </label>
+  <script>
+    // 캔버스, 컨텍스트, 버튼, 레이블 가져오기
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const clear = document.getElementById("clear");
+    const recognize = document.getElementById("recognize");
+    const result = document.getElementById("result");
+
+    // 초기화 함수
+    function clearCanvas() {
+      // 캔버스의 전체 영역을 지우기
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // 인식 함수
+    function recognizeNumber() {
+      // 캔버스의 이미지 데이터를 base64 형식으로 가져오기
+      const imageData = canvas.toDataURL();
+
+      // 파이썬.py 파일의 경로를 지정하기
+      const pythonFile = "python.py";
+
+      // 파이썬.py 파일에 이미지 데이터를 전달하고, 결과를 받기
+      const number = execFile(pythonFile, [imageData]);
+
+      // 결과를 Label에 표시하기
+      result.textContent = "결과: " + number;
+    }
+
+    // 버튼에 클릭 이벤트 리스너 추가
+    clear.addEventListener("click", clearCanvas);
+    recognize.addEventListener("click", recognizeNumber);
+  </script>
+</body>
+</html>

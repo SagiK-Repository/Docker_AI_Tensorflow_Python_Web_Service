@@ -2,6 +2,10 @@
 <html>
 <head>
   <style>
+    #canvas {
+      border: 1px solid black;
+    }
+
     button {
       margin: 10px;
       padding: 10px;
@@ -16,41 +20,89 @@
   </style>
 </head>
 <body>
-  <button id="clear">초기화</button>
-  <button id="recognize">인식</button>
-  <label id="result">결과: </label>
-  <script>
-    // 캔버스, 컨텍스트, 버튼, 레이블 가져오기
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    const clear = document.getElementById("clear");
-    const recognize = document.getElementById("recognize");
-    const result = document.getElementById("result");
+<canvas id="canvas" width="500" height="500"></canvas>
 
-    // 초기화 함수
-    function clearCanvas() {
-      // 캔버스의 전체 영역을 지우기
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+<button id="clear">초기화</button>
+<button id="recognize">인식</button>
 
-    // 인식 함수
-    function recognizeNumber() {
-      // 캔버스의 이미지 데이터를 base64 형식으로 가져오기
-      const imageData = canvas.toDataURL();
+<label id="result">결과:</label>
 
-      // 파이썬.py 파일의 경로를 지정하기
-      const pythonFile = "python.py";
+<script>
+// 캔버스, 컨텍스트, 버튼, 레이블 가져오기
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const clear = document.getElementById("clear");
+const recognize = document.getElementById("recognize");
+const resultLabel = document.getElementById("result");
 
-      // 파이썬.py 파일에 이미지 데이터를 전달하고, 결과를 받기
-      const number = execFile(pythonFile, [imageData]);
+// 초기화 함수
+function clearCanvas() {
+    // 캔버스의 전체 영역을 지우기
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-      // 결과를 Label에 표시하기
-      result.textContent = "결과: " + number;
-    }
+// 인식 함수
+function recognizeNumber() {
+    // 캔버스 이미지 데이터를 base64 형식으로 가져오기
+    const imageData = canvas.toDataURL();
 
-    // 버튼에 클릭 이벤트 리스너 추가
-    clear.addEventListener("click", clearCanvas);
-    recognize.addEventListener("click", recognizeNumber);
-  </script>
+   // AJAX 요청을 통해 서버로 이미지 데이터 전송 및 결과 수신하기
+   fetch('/predict', {
+       method: 'POST',
+       body: JSON.stringify({ image_data: imageData }),
+       headers:{
+           'Content-Type': 'application/json'
+       }
+   })
+   .then(response => response.json())
+   .then(data => {
+       resultLabel.textContent = "결과 : " + data.prediction;
+
+       // 예측 결과 출력 후 캔버스 초기화
+       clearCanvas();
+   })
+   .catch(error => console.error('Error:', error));
+}
+
+// 마우스 이벤트 리스너 추가하여 선 그리기 구현하기
+let isDrawing = false;
+
+function startDrawing(e) {
+     isDrawing = true;
+
+     const rect = e.target.getBoundingClientRect();
+     const x = e.clientX - rect.left;
+     const y= e.clientY - rect.top;
+
+     ctx.beginPath();
+     ctx.moveTo(x, y);
+}
+
+function draw(e) {
+     if (!isDrawing) return;
+
+     const rect= e.target.getBoundingClientRect();
+     const x= e.clientX - rect.left;
+     const y= e.clientY - rect.top;
+
+     ctx.lineTo(x,y);
+     ctx.stroke();
+}
+
+function stopDrawing() {
+        isDrawing=false; 
+}
+
+// 버튼에 클릭 이벤트 리스너 추가
+clear.addEventListener("click", clearCanvas);
+recognize.addEventListener("click", recognizeNumber);
+
+// 캔버스에 마우스 이벤트 리스너 추가하여 선 그리기 기능 활성화하기
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+window.addEventListener('mouseup', stopDrawing);
+
+</script>
+
 </body>
 </html>

@@ -22,10 +22,10 @@
 <body>
 <canvas id="canvas" width="500" height="500"></canvas>
 
-<button id="clear">초기화</button>
-<button id="recognize">인식</button>
+<button id="clear">Clear</button>
+<button id="recognize">Recognize</button>
 
-<label id="result">결과:</label>
+<label id="result">Result:</label>
 
 <script>
 // 캔버스, 컨텍스트, 버튼, 레이블 가져오기
@@ -37,31 +37,34 @@ const resultLabel = document.getElementById("result");
 
 // 초기화 함수
 function clearCanvas() {
-    // 캔버스의 전체 영역을 지우기
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 캔버스의 전체 영역을 흰색으로 지우기
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 // 인식 함수
-function recognizeNumber() {
-    // 캔버스 이미지 데이터를 base64 형식으로 가져오기
-    const imageData = canvas.toDataURL();
+function recognizeNumber() {  
+  resultLabel.textContent = "Result : ...";
+  
+  // 캔버스 이미지 데이터를 base64 형식으로 가져오기
+  const imageData = canvas.toDataURL();
 
-   // AJAX 요청을 통해 서버로 이미지 데이터 전송 및 결과 수신하기
-   fetch('/predict', {
-       method: 'POST',
-       body: JSON.stringify({ image_data: imageData }),
-       headers:{
-           'Content-Type': 'application/json'
-       }
-   })
-   .then(response => response.json())
-   .then(data => {
-       resultLabel.textContent = "결과 : " + data.prediction;
+  // AJAX 요청을 통해 서버로 이미지 데이터 전송 및 결과 수신하기
+  fetch('http://127.0.0.1:10181/predict', {
+      method: 'POST',
+      body: JSON.stringify({ image_data: imageData }),
+      headers:{
+          'Content-Type': 'application/json'
+      }
+  })
+  .then(response => response.json())
+  .then(data => {
+      resultLabel.textContent = "Result : " + data.prediction;
 
-       // 예측 결과 출력 후 캔버스 초기화
-       clearCanvas();
-   })
-   .catch(error => console.error('Error:', error));
+      // 예측 결과 출력 후 캔버스 초기화
+      clearCanvas();
+  })
+  .catch(error => console.error('Error:', error));
 }
 
 // 마우스 이벤트 리스너 추가하여 선 그리기 구현하기
@@ -85,6 +88,7 @@ function draw(e) {
      const x= e.clientX - rect.left;
      const y= e.clientY - rect.top;
 
+     ctx.lineWidth = 10; // 선 굵기 설정 (4로 변경)
      ctx.lineTo(x,y);
      ctx.stroke();
 }

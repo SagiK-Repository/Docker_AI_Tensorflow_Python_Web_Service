@@ -6,24 +6,19 @@ RUN apt-get update && \
     apt-get install -y apache2 python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install tensorflow numpy flask flask-cors Pillow
+
 # 작업 디렉터리를 지정
-WORKDIR /app
+WORKDIR /var/www/html/
 
 # COPY는 호스트의 파일이나 디렉터리를 컨테이너의 파일이나 디렉터리로 복사합니다.
 # 예를 들어, 현재 디렉터리의 모든 파일을 컨테이너의 /app 디렉터리로 복사합니다.
-COPY . /app
-
-# Tensorflow 설치
-RUN pip3 install tensorflow
-
-# numpy 설치
-RUN pip3 install numpy
+COPY . /var/www/html/
 
 # 웹 서버 포트 열기
-EXPOSE 10080
-
-# 웹 페이지 파일 복사
-COPY index.html /var/www/html/
+EXPOSE 80
+EXPOSE 5000
 
 # 웹 서버 실행
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["bash", "-c", "apachectl -D FOREGROUND & python3 /var/www/html/python.py"]
+# CMD ["apachectl", "-D", "FOREGROUND"]

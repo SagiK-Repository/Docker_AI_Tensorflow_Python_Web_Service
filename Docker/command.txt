@@ -1,0 +1,6 @@
+# docker build
+docker build -t juhyung1021/number_python_docker_api_image .
+
+# docker run
+docker run -it --name number_python_docker_api -p 10180:80 -p 10181:5000 -d juhyung1021/number_python_docker_api_image:latest
+

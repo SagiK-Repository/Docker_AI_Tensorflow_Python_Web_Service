@@ -1,4 +1,5 @@
 import tensorflow as tf
+print("TensorFlow version:", tf.__version__)
 
 # MNIST 데이터셋 로드 및 전처리
 mnist = tf.keras.datasets.mnist 
@@ -19,8 +20,8 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # 모델 훈련
-model.fit(x_train, y_train, epochs=5)
+model.fit(x_train, y_train, epochs=1000)
 
 # 모델 저장
-model.save('mnist_model.h5')
+model.save('mnist_model.h1000')
 print("모델이 저장되었습니다.")

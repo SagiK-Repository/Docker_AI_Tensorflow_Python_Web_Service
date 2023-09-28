@@ -1,0 +1,18 @@
+FROM ubuntu:latest
+
+RUN apt-get update && \
+    apt-get install -y apache2 python3-pip && \
+    echo "Hello, Docker!" > /var/www/html/index.html
+
+# 작업 디렉터리를 지정
+WORKDIR /app
+
+RUN pip3 install tensorflow numpy flask
+
+EXPOSE 80
+
+CMD ["apachectl", "-D", "FOREGROUND"]
+
+
+# docker build -t my-apache .
+# docker run -p 8080:80 my-apache

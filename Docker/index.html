@@ -35,6 +35,8 @@ const clear = document.getElementById("clear");
 const recognize = document.getElementById("recognize");
 const resultLabel = document.getElementById("result");
 
+const serverAddress = window.location.hostname + ":10181";
+
 // 초기화 함수
 function clearCanvas() {
     // 캔버스의 전체 영역을 흰색으로 지우기
@@ -50,7 +52,7 @@ function recognizeNumber() {
   const imageData = canvas.toDataURL();
 
   // AJAX 요청을 통해 서버로 이미지 데이터 전송 및 결과 수신하기
-  fetch('http://127.0.0.1:10181/predict', {
+  fetch('http://' + serverAddress + '/predict', {
       method: 'POST',
       body: JSON.stringify({ image_data: imageData }),
       headers:{

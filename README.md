@@ -24,6 +24,8 @@
 - Number를 인식하는 AI는 Python의 Tensorflow를 활용합니다.
 - docker를 통해 html를 여는데, 이를 Apache2를 통해 구현합니다.
 - html의 script를 통해 Java 언어로 Python코드를 호출합니다. 이 방법을 flask를 통해 구현합니다.
+- html에서는 마우스 또는 터치로 화면에 숫자를 그립니다.
+- 이 숫자 한자리를 AI를 통해 인식하여 값을 추출합니다.
 - 이를 docker로 구성합니다.
 
 

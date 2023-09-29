@@ -13,6 +13,22 @@ CORS(app) # 클라이언트로부터의 요청에 대해 모든 도메인에서 
 model_path = 'mnist_model.h100'
 model = tf.keras.models.load_model(model_path)
 
+# np 이미지 회전
+def rotate_image(image_array):
+    angle = np.random.uniform(low=-30.0, high=30.0)  # -30도에서 30도 사이의 각도 랜덤 선택
+    image = Image.fromarray(image_array)
+    rotated_image = image.rotate(angle)
+    rotated_image_array = np.array(rotated_image)
+    return rotated_image_array
+
+# np 이미지 기울기
+def shear_image(image_array):
+    shear = np.random.uniform(low=-0.2, high=0.2)  # -0.2에서 0.2 사이의 기울기 랜덤 선택
+    image = Image.fromarray(image_array)
+    sheared_image = image.transform(image.size, method=Image.AFFINE, data=(1, shear, 0, 0, 1, 0))
+    sheared_image_array = np.array(sheared_image)
+    return sheared_image_array
+
 @app.route('/', methods=['GET'])
 def index():
     return "Hello, World!"
@@ -35,12 +51,23 @@ def predict():
     image_array = np.array(image)
     image_array = image_array / 255.0  # 정규화
 
-	# 예측 수행 (예시)
-    input_image = np.expand_dims(image_array, axis=0)  # 차원 변경 (1개 샘플)
-    predictions = model.predict(input_image)
-    prediction_result = np.argmax(predictions[0])  # 가장 높은 확률의 클래스 선택
+    # 예측 수행 (10회 진행)
+    predictions_list = []
+    for _ in range(10):
+        change_image = rotate_image(image_array)
+        change_image = shear_image(change_image)
+        input_image = np.expand_dims(change_image, axis=0)  # 차원 변경 (1개 샘플)
+        predictions = model.predict(input_image)
+        prediction_result = np.argmax(predictions[0])  # 가장 높은 확률의 클래스 선택
+		
+        predictions_list.append(prediction_result)
 
-    return jsonify({'prediction': int(prediction_result)})
+	# 가장 많은 빈도로 등장한 레이블 선택하기	
+    result_label_counts = np.bincount(predictions_list)
+    most_frequent_label_index = np.argmax(result_label_counts)
+    most_frequent_label_prediction_result= result_label_counts[most_frequent_label_index]
+
+    return jsonify({'prediction': int(most_frequent_label_prediction_result)})
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0') # 포트 외부 접근 허용

@@ -62,9 +62,6 @@ function recognizeNumber() {
   .then(response => response.json())
   .then(data => {
       resultLabel.textContent = "Result : " + data.prediction;
-
-      // 예측 결과 출력 후 캔버스 초기화
-      clearCanvas();
   })
   .catch(error => console.error('Error:', error));
 }

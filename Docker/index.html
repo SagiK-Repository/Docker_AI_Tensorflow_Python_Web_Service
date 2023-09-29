@@ -76,8 +76,8 @@ function startDrawing(e) {
      isDrawing = true;
 
      const rect = e.target.getBoundingClientRect();
-     const x = e.clientX - rect.left;
-     const y= e.clientY - rect.top;
+     const x = getEventX(e);
+     const y= getEventY(e);
 
      ctx.beginPath();
      ctx.moveTo(x, y);
@@ -87,8 +87,8 @@ function draw(e) {
      if (!isDrawing) return;
 
      const rect= e.target.getBoundingClientRect();
-     const x= e.clientX - rect.left;
-     const y= e.clientY - rect.top;
+     const x= getEventX(e);
+     const y= getEventY(e);
 
      ctx.lineWidth = 10; // 선 굵기 설정 (4로 변경)
      ctx.lineTo(x,y);
@@ -99,6 +99,15 @@ function stopDrawing() {
         isDrawing=false; 
 }
 
+// 공통된 좌표값 반환 함수 (마우스 및 터치)
+function getEventX(event) {
+   return event.type.includes('mouse') ? event.clientX - event.target.getBoundingClientRect().left : event.touches[0].clientX - event.target.getBoundingClientRect().left;
+}
+
+function getEventY(event) {
+   return event.type.includes('mouse') ? event.clientY - event.target.getBoundingClientRect().top : event.touches[0].clientY -event.target.getBoundingClientRect().top;
+}
+
 // 버튼에 클릭 이벤트 리스너 추가
 clear.addEventListener("click", clearCanvas);
 recognize.addEventListener("click", recognizeNumber);
@@ -107,6 +116,10 @@ recognize.addEventListener("click", recognizeNumber);
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 window.addEventListener('mouseup', stopDrawing);
+
+canvas.addEventListener('touchstart', startDrawing);
+canvas.addEventListener('touchmove', draw);
+window.addEventListener('touchend', stopDrawing);
 
 </script>
 

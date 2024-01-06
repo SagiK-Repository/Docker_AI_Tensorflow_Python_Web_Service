@@ -5,6 +5,15 @@
 # Docker_AI_Tensorflow_Python_Web_Service
 파이썬 기반 숫자 인식, 도커를 활용한 웹사이트 활용 프로그램 API
 
+### 빠른 시작
+```bash
+docker run -it --name number_python_docker_api -p 10180:80 -p 10181:5000 -d juhyung1021/number_python_docker_api_image:latest
+
+# or
+
+nvidia-docker run -it -p 10180:80 -p 10181:5000 -d juhyung1021/number_python_docker_api_image:latest
+```
+
 ### 목표
 - [x] 0. 프로젝트 설계
 - [x] 1. Dockerfile 구성
